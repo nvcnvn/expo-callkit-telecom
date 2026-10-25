@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 // WebRTC binary, and WebRTC builds name these classes differently (LiveKitWebRTC vends
 // LKRTCAudioSession, upstream WebRTC RTCAudioSession), so each stand-in looks up the app's class
 // at runtime and hands out instances of that class. Only the subset this module calls is declared.
+// Swift's static type for those instances is wrong: optimized builds fold `as?`, `is` and
+// `isKind(of:)` to true, and @objc extensions on a stand-in never reach the real object.
 
 @interface ECKTRTCAudioSessionConfiguration : NSObject
 + (void)setWebRTCConfiguration:(ECKTRTCAudioSessionConfiguration *)configuration;
