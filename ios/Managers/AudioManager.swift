@@ -1,5 +1,4 @@
 import AVFoundation
-internal import ExpoCallKitTelecomWebRTC
 import os
 
 private func permissionStatusString(_ status: AVAudioSession.RecordPermission) -> String {
@@ -63,8 +62,8 @@ private struct SavedAudioSessionConfig {
   let categoryOptions: AVAudioSession.CategoryOptions
 
   /// Converts to RTCAudioSessionConfiguration for use with configureAudioSession.
-  func toRTCConfiguration() -> RTCAudioSessionConfiguration {
-    let config = RTCAudioSessionConfiguration()
+  func toRTCConfiguration() -> ECKTRTCAudioSessionConfiguration {
+    let config = ECKTRTCAudioSessionConfiguration()
     config.category = category.rawValue
     config.mode = mode.rawValue
     config.categoryOptions = categoryOptions
@@ -147,7 +146,7 @@ final class AudioManager {
   /// This sets configuration but does not apply it to the audio session
   /// Enables manual audio management
   func setRTCAudioSessionConfiguration(hasVideo: Bool) {
-    let rtcSession = RTCAudioSession.sharedInstance()
+    let rtcSession = ECKTRTCAudioSession.sharedInstance()
 
     // Enable manual audio management - must be set before any audio session activation
     rtcSession.useManualAudio = true
@@ -155,7 +154,7 @@ final class AudioManager {
     // Set the default WebRTC configuration
     let config =
       hasVideo ? getAudioSessionConfigurationForVideo() : getAudioSessionConfigurationAudioOnly()
-    RTCAudioSessionConfiguration.setWebRTC(config)
+    ECKTRTCAudioSessionConfiguration.setWebRTC(config)
   }
 
   // MARK: - State
@@ -163,7 +162,7 @@ final class AudioManager {
   /// Returns the current audio session state.
   /// - Returns: A dictionary containing the current audio state and configuration.
   func getAudioSessionState() -> [String: Any] {
-    let rtcSession = RTCAudioSession.sharedInstance()
+    let rtcSession = ECKTRTCAudioSession.sharedInstance()
     let avSession = AVAudioSession.sharedInstance()
 
     // Get current route information
@@ -212,8 +211,8 @@ final class AudioManager {
 
   /// Returns the RTCAudioSessionConfiguration for audio-only calls.
   /// Uses voiceChat mode without defaulting to speaker.
-  private func getAudioSessionConfigurationAudioOnly() -> RTCAudioSessionConfiguration {
-    let config = RTCAudioSessionConfiguration()
+  private func getAudioSessionConfigurationAudioOnly() -> ECKTRTCAudioSessionConfiguration {
+    let config = ECKTRTCAudioSessionConfiguration()
     config.category = AVAudioSession.Category.playAndRecord.rawValue
     config.categoryOptions = [.allowBluetoothHFP, .allowBluetoothA2DP, .allowAirPlay]
     config.mode = AVAudioSession.Mode.voiceChat.rawValue
@@ -222,8 +221,8 @@ final class AudioManager {
 
   /// Returns the RTCAudioSessionConfiguration for video calls.
   /// Uses videoChat mode and defaults to speaker output.
-  private func getAudioSessionConfigurationForVideo() -> RTCAudioSessionConfiguration {
-    let config = RTCAudioSessionConfiguration()
+  private func getAudioSessionConfigurationForVideo() -> ECKTRTCAudioSessionConfiguration {
+    let config = ECKTRTCAudioSessionConfiguration()
     config.category = AVAudioSession.Category.playAndRecord.rawValue
     config.categoryOptions = [
       .allowBluetoothHFP, .allowBluetoothA2DP, .allowAirPlay, .defaultToSpeaker,
@@ -234,8 +233,8 @@ final class AudioManager {
 
   /// Configures RTCAudioSession with the given configuration.
   /// - Parameter config: The audio session configuration to apply.
-  private func configureAudioSession(_ config: RTCAudioSessionConfiguration) {
-    let session = RTCAudioSession.sharedInstance()
+  private func configureAudioSession(_ config: ECKTRTCAudioSessionConfiguration) {
+    let session = ECKTRTCAudioSession.sharedInstance()
 
     // Apply the configuration to the AVAudioSession
     session.lockForConfiguration()
@@ -297,7 +296,7 @@ final class AudioManager {
   func onAVAudioSessionActivated(calls: [CallSession]) {
     isActive = true
 
-    let session = RTCAudioSession.sharedInstance()
+    let session = ECKTRTCAudioSession.sharedInstance()
 
     // Notify WebRTC that CallKit activated the audio session
     session.audioSessionDidActivate(AVAudioSession.sharedInstance())
@@ -319,7 +318,7 @@ final class AudioManager {
   func onAVAudioSessionDeactivated(calls: [CallSession]) {
     isActive = false
 
-    let rtcSession = RTCAudioSession.sharedInstance()
+    let rtcSession = ECKTRTCAudioSession.sharedInstance()
 
     // Disable the audio unit (required with useManualAudio = true)
     rtcSession.isAudioEnabled = false
@@ -343,7 +342,7 @@ final class AudioManager {
   /// Note that this only has an effect in voiceChat mode because voiceChat mode makes speaker the default
   /// - Parameter enabled: Whether to route audio to the speaker.
   func setAudioSessionPortOverride(_ enabled: Bool) {
-    let rtcSession = RTCAudioSession.sharedInstance()
+    let rtcSession = ECKTRTCAudioSession.sharedInstance()
     rtcSession.lockForConfiguration()
     defer { rtcSession.unlockForConfiguration() }
 

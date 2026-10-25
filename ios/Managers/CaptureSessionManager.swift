@@ -1,5 +1,4 @@
 import AVFoundation
-internal import ExpoCallKitTelecomWebRTC
 
 private func permissionStatusString(_ status: AVAuthorizationStatus) -> String {
   switch status {
@@ -28,7 +27,7 @@ final class CaptureSessionManager {
   /// On iOS 18+ with voip background mode, this allows the camera to continue
   /// capturing when the app enters PiP or slides over another app.
   private func configureMultitaskingCameraAccess() {
-    let options = WebRTCModuleOptions.sharedInstance()
+    let options = ECKTWebRTCModuleOptions.sharedInstance()
     options.enableMultitaskingCameraAccess = true
     Log.call.debug("Enabled multitasking camera access for WebRTC")
   }
