@@ -19,6 +19,7 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test plugin",
+    "test:ios": "sh ios/Tests/run.sh",
     "typecheck": "tsc --noEmit && tsc --noEmit -p plugin",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
